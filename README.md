@@ -29,6 +29,7 @@ for _, changeEventBytes := range yourChangeStreamBytes {
 ```
 
 - Custom Filter
+
 Filter fuction has been defined as
 ``` go
 type FilterFunc func(ChangeEvent) bool
