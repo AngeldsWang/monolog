@@ -26,11 +26,18 @@ func (op *UpdateOp) Do(ctx context.Context) error {
 		return errors.New("no update fields found in change event")
 	}
 
-	coll := op.Client.Database(op.ChangeEvent.DB).Collection(op.ChangeEvent.Coll)
+	removed := bson.M{}
+	for _, f := range *(op.ChangeEvent.RemovedFields) {
+		if fs, ok := f.(string); ok {
+			removed[fs] = ""
+		}
+	}
 	fullUpdate := bson.D{
 		bson.E{"$set", op.ChangeEvent.UpdatedFields},
-		bson.E{"$unset", op.ChangeEvent.RemovedFields},
+		bson.E{"$unset", removed},
 	}
+
+	coll := op.Client.Database(op.ChangeEvent.DB).Collection(op.ChangeEvent.Coll)
 	_, err := coll.UpdateOne(ctx, op.ChangeEvent.DocumentKey, fullUpdate)
 	if err != nil {
 		return err

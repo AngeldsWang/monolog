@@ -7,6 +7,7 @@ import (
 	"github.com/angeldswang/monolog/consts"
 	"github.com/angeldswang/monolog/events"
 	"github.com/angeldswang/monolog/operations"
+	"github.com/golang/gddo/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -26,11 +27,13 @@ func NewMonolog(client *mongo.Client, filters ...events.FilterFunc) *Monolog {
 func (mono *Monolog) Process(ctx context.Context, data []byte) error {
 	entry := &bson.D{}
 	if err := bson.Unmarshal(data, entry); err != nil {
+		log.Error(ctx, "bson Unmarshal failed", "err", err)
 		return err
 	}
 
 	changeEvent, err := parseEntry(ctx, entry)
 	if err != nil {
+		log.Error(ctx, "parse entry failed", "err", err)
 		return err
 	}
 

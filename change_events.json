@@ -1,0 +1,72 @@
+[
+  {
+    "operationType": "insert",
+    "ns": {
+      "db": "monolog",
+      "coll": "test"
+    },
+    "documentKey": {
+      "_id": "599af247bb69cd89961c986d"
+    },
+    "fullDocument": {
+      "_id": "599af247bb69cd89961c986d",
+      "x": "1",
+      "y": "3"
+    }
+  },
+  {
+    "operationType": "update",
+    "ns": {
+      "db": "monolog",
+      "coll": "test"
+    },
+    "documentKey": {
+      "_id": "599af247bb69cd89961c986d"
+    },
+    "updateDescription": {
+      "updatedFields": {
+        "x": "2"
+      },
+      "removedFields": ["y"]
+    }
+  },
+  {
+    "operationType": "replace",
+    "ns": {
+      "db": "monolog",
+      "coll": "test"
+    },
+    "documentKey": {
+      "_id": "599af247bb69cd89961c986d"
+    },
+    "fullDocument": {
+      "_id": "599af247bb69cd89961c986d",
+      "x": "3"
+    }
+  },
+  {
+    "operationType": "delete",
+    "ns": {
+      "db": "monolog",
+      "coll": "test"
+    },
+    "documentKey": {
+      "_id": "599af247bb69cd89961c986d"
+    }
+  },
+  {
+    "operationType": "insert",
+    "ns": {
+      "db": "monolog",
+      "coll": "test_ignore"
+    },
+    "documentKey": {
+      "_id": "599af247bb69cd89961c986d"
+    },
+    "fullDocument": {
+      "_id": "599af247bb69cd89961c986d",
+      "x": "1",
+      "y": "3"
+    }
+  }
+]
