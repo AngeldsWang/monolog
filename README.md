@@ -3,11 +3,13 @@
 mongodb change stream replayer
 
 ## ChangeEvent
-ChangeEvent defined by [change-events/#change-stream-output](https://docs.mongodb.com/manual/reference/change-events/#change-stream-output)
+ChangeEvent defined with referring to [change-events/#change-stream-output](https://docs.mongodb.com/manual/reference/change-events/#change-stream-output)
 ``` go
 type ChangeEvent struct {
-	DB            string
-	Coll          string
+	SrcDB         string
+	SrcColl       string
+    DstDB         string
+	DstColl       string
 	OperationType string
 	DocumentKey   bson.D
 	UpdatedFields *bson.D
@@ -21,7 +23,10 @@ type ChangeEvent struct {
 - Basic example
 ``` go
 ctx := context.TODO()
-client, _ = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+conf := events.Config{
+    DBMap: {"src_db": "dst_db"},
+}
+client, _ = mongo.Connect(ctx, &conf, options.Client().ApplyURI("mongodb://localhost:27017"))
 mono := NewMonolog(client)
 for _, changeEventBytes := range yourChangeStreamBytes {
     mono.Process(ctx, changeEventBytes)
@@ -37,8 +42,8 @@ type FilterFunc func(ChangeEvent) bool
 
 NewMonolog with mounting your custom filters
 ``` go
-mono := NewMonolog(client, func(ce events.ChangeEvent) bool {
-    return ce.Coll == "ignore_collection"
+mono := NewMonolog(client, conf, func(ce events.ChangeEvent) bool {
+    return ce.SrcColl == "ignore_collection"
 })
 ...
 ```

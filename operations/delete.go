@@ -20,7 +20,7 @@ func NewDeleteOp(client *mongo.Client, ce *events.ChangeEvent) *DeleteOp {
 }
 
 func (op *DeleteOp) Do(ctx context.Context) error {
-	coll := op.Client.Database(op.ChangeEvent.DB).Collection(op.ChangeEvent.Coll)
+	coll := op.Client.Database(op.ChangeEvent.DstDB).Collection(op.ChangeEvent.DstColl)
 	_, err := coll.DeleteOne(ctx, op.ChangeEvent.DocumentKey)
 	if err != nil {
 		return err

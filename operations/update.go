@@ -34,10 +34,12 @@ func (op *UpdateOp) Do(ctx context.Context) error {
 	}
 	fullUpdate := bson.D{
 		bson.E{"$set", op.ChangeEvent.UpdatedFields},
-		bson.E{"$unset", removed},
+	}
+	if len(removed) > 0 {
+		fullUpdate = append(fullUpdate, bson.E{"$unset", removed})
 	}
 
-	coll := op.Client.Database(op.ChangeEvent.DB).Collection(op.ChangeEvent.Coll)
+	coll := op.Client.Database(op.ChangeEvent.DstDB).Collection(op.ChangeEvent.DstColl)
 	_, err := coll.UpdateOne(ctx, op.ChangeEvent.DocumentKey, fullUpdate)
 	if err != nil {
 		return err

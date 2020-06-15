@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 func TestSetup(t *testing.T) {
 	client, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	assert.Nil(t, err)
-	err = client.Database("monolog").Collection("test").Drop(ctx)
+	err = client.Database("monolog_snapshot").Collection("test").Drop(ctx)
 	assert.Nil(t, err)
 }
 
@@ -44,15 +44,18 @@ func TestMonolog(t *testing.T) {
 	})
 
 	t.Run("monolog process ok", func(t *testing.T) {
-		mono = NewMonolog(client, func(ce events.ChangeEvent) bool {
-			return ce.Coll == "test_ignore"
+		conf := &events.Config{
+			DBMap: map[string]string{"monolog": "monolog_snapshot"},
+		}
+		mono = NewMonolog(client, conf, func(ce events.ChangeEvent) bool {
+			return ce.SrcColl == "test_ignore"
 		})
 		for _, ce := range ces {
 			edoc := toD(ce.(map[string]interface{}))
 			t.Logf("edoc=%+v\n", edoc)
 			edocBytes, err := bson.Marshal(edoc)
 			assert.Nil(t, err)
-			err = mono.Process(ctx, edocBytes)
+			_, err = mono.Process(ctx, edocBytes)
 			assert.Nil(t, err)
 		}
 	})

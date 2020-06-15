@@ -5,8 +5,10 @@ import (
 )
 
 type ChangeEvent struct {
-	DB            string
-	Coll          string
+	SrcDB         string
+	DstDB         string
+	SrcColl       string
+	DstColl       string
 	OperationType string
 	DocumentKey   bson.D
 	UpdatedFields *bson.D

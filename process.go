@@ -14,36 +14,38 @@ import (
 
 type Monolog struct {
 	Client  *mongo.Client
+	Config  *events.Config
 	Filters []events.FilterFunc
 }
 
-func NewMonolog(client *mongo.Client, filters ...events.FilterFunc) *Monolog {
+func NewMonolog(client *mongo.Client, conf *events.Config, filters ...events.FilterFunc) *Monolog {
 	return &Monolog{
 		Client:  client,
+		Config:  conf,
 		Filters: filters,
 	}
 }
 
-func (mono *Monolog) Process(ctx context.Context, data []byte) error {
+func (mono *Monolog) Process(ctx context.Context, data []byte) (*events.ChangeEvent, error) {
 	entry := &bson.D{}
 	if err := bson.Unmarshal(data, entry); err != nil {
 		log.Error(ctx, "bson Unmarshal failed", "err", err)
-		return err
+		return nil, err
 	}
 
 	changeEvent, err := parseEntry(ctx, entry)
 	if err != nil {
 		log.Error(ctx, "parse entry failed", "err", err)
-		return err
+		return nil, err
 	}
 
 	for _, filter := range mono.Filters {
 		if filter(*changeEvent) {
-			return nil
+			return changeEvent, nil
 		}
 	}
 
-	return mono.process(ctx, changeEvent)
+	return changeEvent, mono.process(ctx, changeEvent)
 }
 
 func (mono *Monolog) process(ctx context.Context, changeEvent *events.ChangeEvent) error {
@@ -74,9 +76,21 @@ func parseEntry(ctx context.Context, entry *bson.D) (*events.ChangeEvent, error)
 		return nil, errors.New("invalid document key")
 	}
 
+	dstDB, ok := mono.Config.DBMap[db]
+	if !ok {
+		return nil, errors.New("invalid db mapping config")
+	}
+
+	var dstColl = collection
+	if len(mono.Config.CollMap) > 0 {
+		dstColl, _ = mono.Config.CollMap[collection]
+	}
+
 	changeEvent := &events.ChangeEvent{
-		DB:            db,
-		Coll:          collection,
+		SrcDB:         db,
+		SrcColl:       collection,
+		DstDB:         dstDB,
+		DstColl:       dstColl,
 		OperationType: operationType,
 		DocumentKey:   documentKey,
 	}

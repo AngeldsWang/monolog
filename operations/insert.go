@@ -25,7 +25,7 @@ func (op *InsertOp) Do(ctx context.Context) error {
 		return errors.New("no fulldocument found in change event")
 	}
 
-	coll := op.Client.Database(op.ChangeEvent.DB).Collection(op.ChangeEvent.Coll)
+	coll := op.Client.Database(op.ChangeEvent.DstDB).Collection(op.ChangeEvent.DstColl)
 	_, err := coll.InsertOne(ctx, op.ChangeEvent.FullDocument)
 	if err != nil {
 		return err
