@@ -26,8 +26,8 @@ ctx := context.TODO()
 conf := events.Config{
     DBMap: {"src_db": "dst_db"},
 }
-client, _ = mongo.Connect(ctx, &conf, options.Client().ApplyURI("mongodb://localhost:27017"))
-mono := NewMonolog(client)
+client, _ = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+mono := NewMonolog(client, &conf)
 for _, changeEventBytes := range yourChangeStreamBytes {
     mono.Process(ctx, changeEventBytes)
 }
