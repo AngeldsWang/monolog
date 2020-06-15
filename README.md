@@ -6,15 +6,15 @@ mongodb change stream replayer
 ChangeEvent defined with referring to [change-events/#change-stream-output](https://docs.mongodb.com/manual/reference/change-events/#change-stream-output)
 ``` go
 type ChangeEvent struct {
-	SrcDB         string
-	SrcColl       string
+    SrcDB         string
+    SrcColl       string
     DstDB         string
-	DstColl       string
-	OperationType string
-	DocumentKey   bson.D
-	UpdatedFields *bson.D
-	RemovedFields *bson.A
-	FullDocument  *bson.D
+    DstColl       string
+    OperationType string
+    DocumentKey   bson.D
+    UpdatedFields *bson.D
+    RemovedFields *bson.A
+    FullDocument  *bson.D
 }
 ```
 
