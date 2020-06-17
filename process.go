@@ -33,7 +33,7 @@ func (mono *Monolog) Process(ctx context.Context, data []byte) (*events.ChangeEv
 		return nil, err
 	}
 
-	changeEvent, err := parseEntry(ctx, entry)
+	changeEvent, err := mono.parseEntry(ctx, entry)
 	if err != nil {
 		log.Error(ctx, "parse entry failed", "err", err)
 		return nil, err
@@ -52,7 +52,7 @@ func (mono *Monolog) process(ctx context.Context, changeEvent *events.ChangeEven
 	return operations.NewOperator(mono.Client, changeEvent).Do(ctx)
 }
 
-func parseEntry(ctx context.Context, entry *bson.D) (*events.ChangeEvent, error) {
+func (mono *Monolog) parseEntry(ctx context.Context, entry *bson.D) (*events.ChangeEvent, error) {
 	ns, ok := entry.Map()[consts.FsNS].(bson.D)
 	if !ok {
 		return nil, errors.New("invalid ns fields")
